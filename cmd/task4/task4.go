@@ -30,7 +30,7 @@ func main() {
 	slice := []int{0, 001, 00001, 0000000001}
 	err = someFunction(slice)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err) // NOTE: should fail
 	}
 }
 
