@@ -4,7 +4,7 @@ tbd
 > `pkg`    
 |-`tickets`  - **will be also used for last task**  
 | |-interface.go  *used for taskN 3*  
-| |-functions.go  *used for taskN 2*  
+| |-functions.go  *used for taskN 1*  
 | |-methods.go  *used for taskN 2*  
 | |-structures.go  *used for taskN 1*  
 | |-`types`  - **additional types used for development**  
