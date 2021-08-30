@@ -10,7 +10,7 @@ import (
 
 var (
 	maxLength = math.Pow(10, 4)
-	maxValue  = math.Pow(10, 5) + 1
+	maxValue  = math.Pow(10, 5)
 )
 
 var usageError = errors.New("usage error")
@@ -55,17 +55,18 @@ func main() {
 
 func someFunction(arr interface{}) (interface{}, error) {
 	val := reflect.ValueOf(arr)
-
+	// act if got array of valid length
 	if val.Kind() == reflect.Array && val.Len() <= int(maxLength) {
 		arrLength := val.Len()
-		entities := make([]int64, arrLength, arrLength)
-		printSlice(entities)
+		entities := make([]int64, arrLength)
 
 		for i := range entities {
+			// iterate val getting each value from it
 			e := val.Index(i)
 			switch e.Kind() {
 			case reflect.Int:
-				if e.Int() >= int64(int(maxValue)) {
+				// add to slice if value is of int type
+				if e.Int() > int64(int(maxValue)) {
 					return nil, usageError
 				}
 				entities[i] = e.Int()
@@ -73,8 +74,8 @@ func someFunction(arr interface{}) (interface{}, error) {
 				return nil, errors.New("not implemented")
 			}
 		}
-
-		printSlice(entities)
+		printSlice(entities, `initial arr values`)
+		// here we are mutating slice values
 		for i := 0; i < arrLength; i++ {
 			tempSlice := entities[i:]
 			var greatest int64 = -math.MaxInt64
@@ -86,7 +87,7 @@ func someFunction(arr interface{}) (interface{}, error) {
 			}
 		}
 		entities[arrLength-1] = -1
-		printSlice(entities)
+		printSlice(entities, `slice after mutation`)
 
 		// "После чего, верните массив arr."
 		// NOTE: я не знаю как мне мутировать и возвращать arrays разной длины
@@ -94,6 +95,7 @@ func someFunction(arr interface{}) (interface{}, error) {
 		// поэтому пока возвращаю что умею. :)
 		// for ind, el := range entities {
 		// 	val[ind] = el
+		//  val[ind].SetInt(el)
 		// }
 		// (type 'Value' does not support indexing)
 
@@ -102,6 +104,6 @@ func someFunction(arr interface{}) (interface{}, error) {
 	return nil, usageError
 }
 
-func printSlice(s []int64) {
-	fmt.Printf("len=%d cap=%d %v\n", len(s), cap(s), s)
+func printSlice(s []int64, mark string) {
+	fmt.Printf("len=%d cap=%d %v | %v\n", len(s), cap(s), s, mark)
 }
