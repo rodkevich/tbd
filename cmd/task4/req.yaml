@@ -1,0 +1,24 @@
+Задание 4:
+  Дан некоторый массив arr, замените каждый элемент в этом массиве самым
+  большим элементом справа от текущего, а самый последний массив замените на -1.
+  После чего, верните массив arr.
+
+Пример 1:
+Input1: arr = [17,18,5,4,6,1]
+Output1: [ 18,6,6,6,1,-1 ]
+Explanation1:
+  - index 0 --&gt; the greatest element to the right of index 0 is index 1 (18).
+  - index 1 --&gt; the greatest element to the right of index 1 is index 4 (6).
+  - index 2 --&gt; the greatest element to the right of index 2 is index 4 (6).
+  - index 3 --&gt; the greatest element to the right of index 3 is index 4 (6).
+  - index 4 --&gt; the greatest element to the right of index 4 is index 5 (1).
+  - index 5 --&gt; there are no elements to the right of index 5, so we put -1.
+
+Пример 2:
+Input2: arr = [400]
+Output2: [ -1 ]
+Explanation2: There are no elements to the right of index 0.
+
+Ограничения:
+  ● 1 &lt;= arr.length &lt;= 104
+  ● 1 &lt;= arr[i] &lt;= 105
