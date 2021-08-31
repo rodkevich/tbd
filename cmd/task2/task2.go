@@ -18,7 +18,7 @@ func main() {
 	for i := 0; i < len(arr); i++ {
 		arr[i] = tickets.Ticket{
 			// add 1 to skip 0 value:
-			OrderNumber: i + 1,
+			OrderNumber: uint(i + 1),
 			DateCreated: msg.TimeNowFormatted(),
 		}
 	}

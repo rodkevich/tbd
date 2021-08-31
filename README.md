@@ -1,5 +1,11 @@
 tbd
 ***
+If you have any docker volumes attached to postgres init.js won't work detach them
+using :
+
+`docker-compose down --volumes`  
+`docker-compose build --parallel`  
+`docker-compose up`  
 .  
 `pkg`  
 |-`tickets`  - **will be also used for last task**  

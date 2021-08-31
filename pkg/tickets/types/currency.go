@@ -7,8 +7,6 @@ const (
 	USD Currency = 251
 	// EUR ...
 	EUR Currency = 93
-	// RUB ...
-	RUB Currency = 209
 )
 
 // Currency ...
@@ -23,4 +21,17 @@ func (c Currency) IsValid() bool {
 		return true
 	}
 	return false
+}
+
+// CurrencyToString ...
+func CurrencyToString(c Currency) string {
+	switch c {
+	case BYN:
+		return "Candy wrappers"
+	case USD:
+		return "Money"
+	case EUR:
+		return "Not yet supported"
+	}
+	return "ErrorCase"
 }

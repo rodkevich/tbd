@@ -19,7 +19,9 @@ services:
 
   task5-postgres:
     image: postgres:latest
-    container_name: db
+    volumes:
+      - ./config/migrations/init.sql:/docker-entrypoint-initdb.d/init.sql
+    container_name: task5-postgres
     deploy:
       resources:
         limits:

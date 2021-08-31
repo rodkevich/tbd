@@ -6,7 +6,9 @@ ENV GO111MODULE=auto
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-#RUN go get -d -v github.com/google/uuid
+RUN go get -d -v github.com/go-playground/validator
+RUN go get -d -v github.com/google/uuid
+RUN go get -d -v github.com/gorilla/mux
 #RUN dpkg-reconfigure ca-certificates
 
 WORKDIR /go/src/github.com/rodkevich/tbd

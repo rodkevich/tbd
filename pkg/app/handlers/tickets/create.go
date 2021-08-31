@@ -7,7 +7,9 @@ import (
 	"github.com/rodkevich/tbd/pkg/tickets"
 )
 
+// Create ...
 func Create(w http.ResponseWriter, r *http.Request) {
-	_ = tickets.Ticket{}
-	msg.ReturnClientError(w, "not yet implemented")
+	time := msg.TimeNowFormatted()
+	t := tickets.Ticket{DateCreated: time}
+	msg.ReturnJSON(w, t)
 }
