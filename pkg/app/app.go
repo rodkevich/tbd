@@ -14,9 +14,9 @@ var applicationPort = env.EnvGetOrDefault("APPPORT", "12300")
 
 func Run() {
 	router := mux.NewRouter()
-	router.HandleFunc("/api/v0/create", tickets.Create).Methods(http.MethodGet)
-	router.HandleFunc("/api/v0/search", tickets.Search).Methods(http.MethodGet)
-	router.HandleFunc("/api/v0/view", tickets.View).Methods(http.MethodGet)
+	router.HandleFunc("/api/v0/create", tickets.Create).Methods(http.MethodPost)
+	router.HandleFunc("/api/v0/search", tickets.Search).Methods(http.MethodPost)
+	router.HandleFunc("/api/v0/view/:userID", tickets.View).Methods(http.MethodGet)
 
 	log.Println("Starting API server on " + applicationPort)
 	if err := http.ListenAndServe(":"+applicationPort, router); err != nil {
