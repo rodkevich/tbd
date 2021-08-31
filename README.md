@@ -1,6 +1,6 @@
 tbd
 ***
-If you have any docker volumes attached to postgres init.js won't work detach them
+If you have any docker volumes attached to postgres init.js won't work. Detach them
 using :
 
 `docker-compose down --volumes`  
