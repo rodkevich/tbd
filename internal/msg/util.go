@@ -16,8 +16,6 @@ const (
 const (
 	// StrTemplateTicket ...
 	StrTemplateTicket = "%v | %s"
-	// TimeLayout ...
-	TimeLayout = "2006-01-02T15:04:05.9999999Z"
 )
 
 // Fail ..
@@ -27,9 +25,9 @@ func Fail(s string) (err error) {
 }
 
 // TimeNowFormatted ...
-func TimeNowFormatted() (rtn string) {
+func TimeNowFormatted() (rtn time.Time) {
 	t := time.Now()
 	// apply formatting
-	rtn = t.UTC().Format(TimeLayout)
+	rtn = t.UTC()
 	return
 }
