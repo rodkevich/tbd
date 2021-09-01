@@ -1,4 +1,4 @@
-package tickets
+package app
 
 import (
 	"net/http"
@@ -7,7 +7,8 @@ import (
 )
 
 // Search ...
-func Search(w http.ResponseWriter, r *http.Request) {
+func (a Application) Search(w http.ResponseWriter, r *http.Request) {
+
 	msg.ReturnClientError(w, "not yet implemented")
 
 }

@@ -8,20 +8,20 @@ import (
 
 // Ticket ...
 type Ticket struct {
-	ID            *uuid.UUID   `json:"id"`
+	ID            *uuid.UUID   `json:"ticket_id"`
 	OrderNumber   uint         `json:"order_number" validate:"gte=1,lte=10"`
 	Name          string       `json:"ticket_name" validate:"gte=0,lte=200"`
 	PhotoMainLink types.Link   `json:"photo_main_link"`
-	PhotoLinks    []types.Link `json:"photo_links" validate:"gte=0,lte=3"`
+	PhotoLinks    []types.Link `json:"photo_links,omitempty" validate:"lte=3"`
 	Price         struct {
 		Currency types.Currency `json:"currency"`
-		Current  uint           `json:"current" validate:"gte=0,lte=9223372036854775807"`
+		Current  float64        `json:"current_price" validate:"gte=0,lte=9223372036854775807"`
 		Discount uint           `json:"discount" validate:"gte=0,lte=100"`
-		Min      uint           `json:"min" validate:"gte=0,lte=9223372036854775807"`
-		Max      uint           `json:"max" validate:"gte=0,lte=9223372036854775807"`
+		Min      float64        `json:"min_price" validate:"gte=0,lte=9223372036854775807"`
+		Max      float64        `json:"max_price" validate:"gte=0,lte=9223372036854775807"`
 	} `json:"price"`
-	Description types.Description `json:"description" validate:"gte=0,lte=1000"`
-	PhoneNumber types.Phone       `json:"phone"`
-	DateCreated string            `json:"date_created"`
-	Deleted     bool              `json:"is_deleted"`
+	Description types.Description `json:"description,omitempty" validate:"gte=0,lte=1000"`
+	PhoneNumber types.Phone       `json:"phone_number"`
+	DateCreated string            `json:"created_at"`
+	Active      bool              `json:"is_active"`
 }

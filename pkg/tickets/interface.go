@@ -1,20 +1,23 @@
 package tickets
 
-// Struckturizator ...
-type Struckturizator interface {
-	TicketValidation(t Ticket, opts ...ValidationOption) (err error)
-}
+// NOTE: could use interface and make the struct private
+// 	it will be: type struckturizator struct{}
+//	but changed it for demo of embeddingZ in task5 application
+//
+// type Struckturizator interface {
+// 	TicketValidation(t Ticket, opts ...ValidationOption) (err error)
+// }
 
-// Private structure
-type struckturizator struct {
+// Struckturizator ..
+type Struckturizator struct {
 }
 
 // NewStruckturizator ...
-func NewStruckturizator() *struckturizator {
-	return &struckturizator{}
+func NewStruckturizator() *Struckturizator {
+	return &Struckturizator{}
 }
 
 // TicketValidation small trick :)
-func (s *struckturizator) TicketValidation(t Ticket, opts ...ValidationOption) (err error) {
+func (s *Struckturizator) TicketValidation(t Ticket, opts ...ValidationOption) (err error) {
 	return TicketValidation(t, opts...)
 }

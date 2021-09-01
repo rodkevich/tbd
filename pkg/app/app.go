@@ -6,20 +6,45 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/rodkevich/tbd/internal/env"
-	"github.com/rodkevich/tbd/pkg/app/handlers/tickets"
+	"github.com/rodkevich/tbd/pkg/datasource"
+	postgres "github.com/rodkevich/tbd/pkg/datasource/postgress"
+	"github.com/rodkevich/tbd/pkg/tickets"
 )
 
-var applicationPort = env.EnvGetOrDefault("APPPORT", "12300")
+var (
+	ds  datasource.Datasource
+	err error
+)
 
-func Run() {
+func init() {
+	var config = "postgresql://postgres:postgres@localhost:5432/postgres"
+	ds, err = postgres.NewDatasource(config)
+	if err != nil {
+		panic(err)
+	}
+}
+
+// Application ...
+type Application struct {
+	Router                   *mux.Router
+	*tickets.Struckturizator // embedding task3
+}
+
+// Run ...
+func (a *Application) Run(port string) {
 	router := mux.NewRouter()
-	router.HandleFunc("/api/v0/create", tickets.Create).Methods(http.MethodPost)
-	router.HandleFunc("/api/v0/search", tickets.Search).Methods(http.MethodPost)
-	router.HandleFunc("/api/v0/view/:userID", tickets.View).Methods(http.MethodGet)
 
-	log.Println("Starting API server on " + applicationPort)
-	if err := http.ListenAndServe(":"+applicationPort, router); err != nil {
+	router.HandleFunc("/api/v0/create", a.Create).Methods(http.MethodPost)
+	router.HandleFunc("/api/v0/search", a.Search).Methods(http.MethodPost)
+	router.HandleFunc("/api/v0/ticket/{id}", a.View).Methods(http.MethodGet)
+	router.HandleFunc("/api/v0/ticket/{id}", a.View).Methods(http.MethodGet).Queries(
+		"fields", "{fields}").HandlerFunc(a.View).Name("View")
+
+	log.Println("Starting API server on " + port)
+	if err = http.ListenAndServe(":"+port, router); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func (a *Application) SetUp(user, password, dbname string) {
 }
