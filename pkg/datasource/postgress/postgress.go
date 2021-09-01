@@ -54,8 +54,7 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 			RETURNING ticket_id;
 			`
 	err := d.db.QueryRow(
-		ctx,
-		stmt,
+		ctx, stmt,
 		t.OrderNumber, t.Name, t.PhotoMainLink, t.Price.Currency,
 		t.Price.Current, t.Price.Discount, t.Price.Min, t.Price.Max,
 		t.Description, t.PhoneNumber, t.Active, t.DateCreated).Scan(&ticketID)
@@ -69,37 +68,34 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 
 // Search ...
 func (d datasource) Search(strings []string) []tickets.Ticket {
-
 	return nil
 }
 
 // ViewByID ...
-func (d datasource) ViewByID(id string) (t *tickets.Ticket) {
+func (d datasource) ViewByID(id string) *tickets.Ticket {
 	ctx, cancel := context.WithTimeout(ctxDefault, operationsTimeOut)
 	defer cancel()
 	stmt := `
-		SELECT *
+		SELECT
+		ticket_id, order_number, ticket_name, photo_main_link, currency, current_price,
+		discount, min_price, max_price, description, phone_number,
+		is_active, created_at
 		FROM tickets
 		WHERE ticket_id=$1
 		AND is_active=true
 		`
-	var tic = tickets.Ticket{}
-	// err := d.db.QueryRow(ctx, stmt, id).Scan(
-	// 	// &tic.ID,
-	// 	// &tic.OrderNumber,
-	// 	// &tic.Name,
-	// 	// &tic.Description,
-	// 	// &tic.Active,
-	// 	// &tic.DateCreated,
-	// 	// &tic.Price.Current,
-	// &tic)
-	err := d.db.QueryRow(ctx, stmt, id).Scan(&t)
+	var t tickets.Ticket
+	err := d.db.QueryRow(ctx, stmt, id).Scan(
+		&t.ID,
+		&t.OrderNumber, &t.Name, &t.PhotoMainLink, &t.Price.Currency,
+		&t.Price.Current, &t.Price.Discount, &t.Price.Min, &t.Price.Max,
+		&t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated)
 
-	log.Println(tic)
+	log.Println(t)
 	if err != nil {
 		log.Printf("err: pg: view by id: stmt: %v\n", err)
 		return nil
 	}
 
-	return
+	return &t
 }

@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/rodkevich/course-rest/lib"
 	"github.com/rodkevich/tbd/internal/msg"
 	"github.com/rodkevich/tbd/pkg/tickets"
 )
@@ -20,14 +19,14 @@ func (a Application) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := json.Unmarshal(b, &t); err != nil {
-		lib.ReturnInternalError(w, err)
+		msg.ReturnServerError(w, err)
 		return
 	}
 	log.Println(t.String())
 
 	err = a.TicketValidation(t)
 	if err != nil {
-		msg.ReturnClientError(w, "Ticket-Validation-Error")
+		msg.ReturnClientError(w, "error: ticket validation failed")
 		return
 	}
 	uuid := ds.Create(t)
