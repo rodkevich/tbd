@@ -2,7 +2,7 @@ package tickets
 
 // NOTE: could use interface and make the struct private
 // 	it will be: type struckturizator struct{}
-//	but changed it for demo of embeddingZ in task5 application
+//	but changed it for demo of embedding in task5 application
 //
 // type Struckturizator interface {
 // 	TicketValidation(t Ticket, opts ...ValidationOption) (err error)

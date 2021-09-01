@@ -1,7 +1,6 @@
 package tickets
 
 import (
-	"strconv"
 	"unicode/utf8"
 
 	"github.com/go-playground/validator"
@@ -107,12 +106,12 @@ func TicketValidation(t Ticket, opts ...ValidationOption) (err error) {
 			return valErrorLinkOverflow
 		}
 
-		for x, link := range t.PhotoLinks {
-			if !link.IsValid() {
-				message := `validation failed: validationErrorPhotoLinks N:` + strconv.Itoa(x+1)
-				return msg.Fail(message)
-			}
-		}
+		// for x, link := range t.PhotoLinks {
+		// 	if !link.IsValid() {
+		// 		message := `validation failed: validationErrorPhotoLinks N:` + strconv.Itoa(x+1)
+		// 		return msg.Fail(message)
+		// 	}
+		// }
 	}
 
 	if enabled.Description && !t.Description.IsValid() {

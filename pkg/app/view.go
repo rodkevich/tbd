@@ -14,8 +14,9 @@ func (a Application) View(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id := params["id"]
 	key := r.FormValue("fields")
-	if key != "" {
-		q := ds.ViewByID(id)
+
+	if key == "true" {
+		q := ds.TicketWithID(id)
 		msg.ReturnJSON(w, q)
 		return
 	}

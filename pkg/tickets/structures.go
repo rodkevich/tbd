@@ -1,6 +1,8 @@
 package tickets
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/rodkevich/tbd/pkg/tickets/types"
@@ -8,11 +10,11 @@ import (
 
 // Ticket ...
 type Ticket struct {
-	ID            *uuid.UUID   `json:"ticket_id"`
-	OrderNumber   uint         `json:"order_number" validate:"gte=1,lte=10"`
-	Name          string       `json:"ticket_name" validate:"gte=0,lte=200"`
-	PhotoMainLink types.Link   `json:"photo_main_link"`
-	PhotoLinks    []types.Link `json:"photo_links,omitempty" validate:"lte=3"`
+	ID            *uuid.UUID `json:"id"`
+	OrderNumber   uint       `json:"order_number" validate:"gte=1,lte=10"`
+	Name          string     `json:"ticket_name" validate:"gte=0,lte=200"`
+	PhotoMainLink types.Link `json:"photo_main_link"`
+	PhotoLinks    []string   `json:"photo_links,omitempty" validate:"lte=3"`
 	Price         struct {
 		Currency types.Currency `json:"currency"`
 		Current  float64        `json:"current_price" validate:"gte=0,lte=9223372036854775807"`
@@ -22,6 +24,6 @@ type Ticket struct {
 	} `json:"price"`
 	Description types.Description `json:"description,omitempty" validate:"gte=0,lte=1000"`
 	PhoneNumber types.Phone       `json:"phone_number"`
-	DateCreated string            `json:"created_at"`
+	DateCreated time.Time         `json:"created_at"`
 	Active      bool              `json:"is_active"`
 }
