@@ -2,13 +2,28 @@ tbd
 
 #### Вообще эта задача для NoSQL базы...
 
-Все что нужно компилить вынесено в ./cmd/{задача_номер}  
-Сервер тоже, для удобства, но можно переименовать Run в main и запускать как надо)  
-В файле запускающем сервер для демонстрации:  
-https://github.com/rodkevich/tbd/blob/develop/cmd/task5/server/server.go  
-... есть шаблоны запросов `curl` чтобы пулять.  
+Все, что нужно компилить, вынесено в ./cmd/{задача_номер}.  
+Сервер тоже, для удобства, но можно в /pkg переименовать Run в main и запускать как
+надо)  
+Файл запускающий сервер для демонстрации:  
+https://github.com/rodkevich/tbd/blob/develop/cmd/task5/server/server.go
+
+NOTE: Из рута проекта можно популять файлы post_example.json, насоздавать тикетов:  
+`curl -d "@post_example.json" -X POST localhost:12300/api/v0/create`  
+На моём стейдже работает ^^
+
+NOTE: полученный айди соответвтенно чекаем :  
+`curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70?fields=true'`  
+`curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70'`
+
+NOTE: список всех чекаем:  
+`curl -X GET 'localhost:12300/api/v0/list?price=DESC&date=ASC'`  
+`curl -X GET 'localhost:12300/api/v0/list?price=ASC&date=DESC'`
+
 У создаваемого юзера должен быть `"is_active": true` иначе база его не отдаст.  
-Ну и все такое) удачи)
+Данные из POST'ов естественно для них должны различаться, чтобы по ним сортировать можно
+было.  
+Ну и все такое, удачи)
 
 ***
 

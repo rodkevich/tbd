@@ -1,0 +1,21 @@
+{
+  "order_number": 1,
+  "ticket_name": "Name Example",
+  "photo_main_link": "http://www.example.com",
+  "photo_links": [
+    "http://www.example.com/a#",
+    "https://www.example.com/b?a=b%20c",
+    "ws://www.example.com/websocket"
+  ],
+  "price": {
+    "currency": 251,
+    "current_price": 150.1,
+    "discount": 10,
+    "min_price": 22.22,
+    "max_price": 33.33
+  },
+  "description": "Description Here",
+  "phone_number": "+91 (123) 456-7890",
+  "created_at": "0021-11-22T00:00:00Z",
+  "is_active": true
+}
