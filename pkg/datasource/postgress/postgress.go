@@ -68,11 +68,11 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 		var c int
 		stmt2 := `
 			INSERT INTO photo_links (ticket_id, link_address)
-			VALUES ($1, $2);
-			`
-		err = d.db.QueryRow(ctx, stmt2, ticketID, photoLink).Scan(&c)
+			VALUES ($1, $2)
+			RETURNING link_id;`
+		err := d.db.QueryRow(ctx, stmt2, ticketID, photoLink).Scan(&c)
 		if err != nil {
-			return
+			log.Println(err)
 		}
 	}
 	return
