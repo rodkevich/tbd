@@ -12,13 +12,15 @@ NOTE: Из рута проекта можно популять файлы post_e
 `curl -d "@post_example.json" -X POST localhost:12300/api/v0/create`  
 На моём стейдже работает ^^
 
-NOTE: получаем в консоли айди. Их, соответственно, чекаем по урлам, меняя в шаблоне:  
-`curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70?fields=true'`  
-`curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70'`
+NOTE: получаем в консоли айди. Их, соответственно, чекаем по урлам, меняя в шаблоне:
 
-NOTE: список всех чекаем:  
-`curl -X GET 'localhost:12300/api/v0/list?price=DESC&date=ASC'`  
-`curl -X GET 'localhost:12300/api/v0/list?price=ASC&date=DESC'`
+    curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70?fields=true'  
+    curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70'
+
+NOTE: список всех чекаем:
+
+    curl -X GET 'localhost:12300/api/v0/list?price=DESC&date=ASC'  
+    curl -X GET 'localhost:12300/api/v0/list?price=ASC&date=DESC'
 
 У создаваемого юзера должен быть `"is_active": true` иначе база его не отдаст.  
 Данные из POST'ов естественно для них должны различаться, чтобы по ним сортировать можно
