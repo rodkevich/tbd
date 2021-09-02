@@ -18,7 +18,7 @@ RUN: `go run ./cmd/task5/server/server.go `
 WARNING:  
 If you have any docker volumes attached to a postgres instance - init.sql won't work.  
 Before running a server detach them using :  
-`docker-compose down --volumes`
+`docker-compose down --volumes`  
 Or : create migrations from ./cmd/task5/config/migrations/init.sql manually
 
 Structure:  
