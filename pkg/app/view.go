@@ -1,9 +1,9 @@
 package app
 
 import (
-	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 
 	"github.com/rodkevich/tbd/internal/msg"
@@ -15,10 +15,18 @@ func (a Application) View(w http.ResponseWriter, r *http.Request) {
 	id := params["id"]
 	key := r.FormValue("fields")
 
-	if key == "true" {
-		q := ds.TicketWithID(id)
-		msg.ReturnJSON(w, q)
+	parse, err := uuid.Parse(id)
+	if err != nil {
+		msg.ReturnClientError(w, "bad uuid")
 		return
 	}
-	msg.ReturnServerError(w, errors.New("not yet implemented"))
+
+	switch key {
+	case "true":
+		ticket := ds.TicketWithID(parse, true)
+		msg.ReturnJSON(w, ticket)
+		return
+	}
+	ticket := ds.TicketWithID(parse, false)
+	msg.ReturnJSON(w, ticket)
 }

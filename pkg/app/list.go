@@ -12,21 +12,21 @@ type SearchConfig struct {
 
 // List ...
 func (a Application) List(w http.ResponseWriter, r *http.Request) {
-	var x, y string
+	var PriceSort, DateSort string
 	urlParams := r.URL.Query()
 	if p := urlParams.Get("price"); IsValid(p) {
-		x = p
+		PriceSort = p
 	}
 	if p := urlParams.Get("date"); IsValid(p) {
-		y = p
+		DateSort = p
 	}
-	t := ds.List(x, y)
-	msg.ReturnJSON(w, t)
+	tickets := ds.List(PriceSort, DateSort)
+	msg.ReturnJSON(w, tickets)
 }
 
 func IsValid(s string) bool {
 	switch s {
-	case "ACS", "DESC":
+	case "ASC", "DESC":
 		return true
 	}
 	return false

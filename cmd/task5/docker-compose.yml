@@ -5,7 +5,7 @@ services:
   task5-app:
     build:
       context: ../..
-      dockerfile: cmd/task5/app/Dockerfile
+      dockerfile: cmd/task5/server/Dockerfile
     image: task5-app
     container_name: task5-app
     hostname: task5-app

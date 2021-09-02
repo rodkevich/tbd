@@ -25,11 +25,6 @@ var (
 type datasource struct {
 	db *pgxpool.Pool
 }
-type link struct {
-	LinkId      int        `json:"link_id,omitempty"`
-	TicketId    *uuid.UUID `json:"ticket_id,omitempty"`
-	LinkAddress string     `json:"link_address,omitempty"`
-}
 
 // NewDatasource ...
 func NewDatasource(config string) (ds.Datasource, error) {
@@ -85,10 +80,8 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 // List ...
 func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 	stmt := `
-	SELECT
-	*
-	FROM
-	tickets
+	SELECT *
+	FROM tickets
 	ORDER BY
 	created_at ` + DateSort + `,
 	current_price ` + PriceSort + `;
@@ -102,19 +95,11 @@ func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 	for rows.Next() {
 		var t tickets.Ticket
 		if err := rows.Scan(
-			&t.ID,
-			&t.OrderNumber,
-			&t.Name,
-			&t.PhotoMainLink,
-			&t.Price.Currency,
-			&t.Price.Current,
-			&t.Price.Discount,
-			&t.Price.Min,
-			&t.Price.Max,
-			&t.Description,
-			&t.PhoneNumber,
-			&t.Active,
-			&t.DateCreated,
+			&t.ID, &t.OrderNumber, &t.Name, &t.PhotoMainLink,
+			&t.Price.Currency, &t.Price.Current, &t.Price.Discount,
+			&t.Price.Min, &t.Price.Max,
+			&t.Description, &t.PhoneNumber,
+			&t.Active, &t.DateCreated,
 		); err != nil {
 			return nil
 		}
@@ -133,14 +118,12 @@ func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 			if err := rows.Scan(
 				&link,
 			); err != nil {
-				log.Println(err)
+				return
 			}
 			t.PhotoLinks = append(t.PhotoLinks, link)
 		}
 		items = append(items, t)
 	}
-	log.Printf("items: %v\n", items)
-
 	if err := rows.Err(); err != nil {
 		log.Printf("err: pg: search: %v\n", err)
 		return
@@ -149,63 +132,60 @@ func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 }
 
 // TicketWithID ...
-func (d datasource) TicketWithID(id string) *tickets.Ticket {
-	print(id)
+func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 	ctx, cancel := context.WithTimeout(ctxDefault, operationsTimeOut)
 	defer cancel()
 	stmt := `
-			WITH some_count AS (
-			SELECT
-			id,
-			ARRAY_AGG (link_address) photo_links
-			FROM
-			tickets
-			LEFT JOIN photo_links ON tickets.id=photo_links.ticket_id
-			GROUP BY
-			id)
-			SELECT * FROM some_count
-			WHERE id=$1;
-			`
+		SELECT *
+		FROM tickets
+		WHERE id = $1;
+		`
 	var t tickets.Ticket
-	err := d.db.QueryRow(ctx, stmt, id).Scan(
-		&t.ID, &t.PhotoLinks,
-		// &t.OrderNumber, &t.Name, &t.PhotoMainLink, &t.Price.Currency,
-		// &t.Price.Current, &t.Price.Discount, &t.Price.Min, &t.Price.Max,
-		// &t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated
-	)
-
-	if err != nil {
-		log.Printf("err: pg: view by id: stmt: %v\n", err)
+	row := d.db.QueryRow(ctx, stmt, id)
+	if err := row.Scan(
+		&t.ID, &t.OrderNumber, &t.Name, &t.PhotoMainLink,
+		&t.Price.Currency, &t.Price.Current,
+		&t.Price.Discount, &t.Price.Min, &t.Price.Max,
+		&t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated,
+	); err != nil {
+		log.Println(err)
 		return nil
 	}
-
+	// optional part
+	if fields {
+		getTicketLinks := `
+		SELECT  link_address
+		FROM photo_links
+		WHERE ticket_id = $1;
+		`
+		rows, err := d.db.Query(ctxDefault, getTicketLinks, t.ID)
+		if err != nil {
+			log.Println(err)
+		}
+		var link string
+		for rows.Next() {
+			if err := rows.Scan(
+				&link,
+			); err != nil {
+				return nil
+			}
+			t.PhotoLinks = append(t.PhotoLinks, link)
+		}
+	}
 	return &t
 }
 
-// // TicketWithID ...
-// func (d datasource) TicketWithID(id string) *tickets.Ticket {
-// 	ctx, cancel := context.WithTimeout(ctxDefault, operationsTimeOut)
-// 	defer cancel()
-// 	stmt := `
-// 		SELECT
-// 		(id, order_number, ticket_name, photo_main_link, currency, current_price,
-// 		discount, min_price, max_price, description, phone_number,
-// 		is_active, created_at)
-// 		from tickets left join photo_links on tickets.id=photo_links.ticket_id
-// 		WHERE id=$1
-// 		AND is_active=true
-// 		`
-// 	var t tickets.Ticket
-// 	err := d.db.QueryRow(ctx, stmt, id).Scan(
-// 		&t.ID,
-// 		&t.OrderNumber, &t.Name, &t.PhotoMainLink, &t.Price.Currency,
-// 		&t.Price.Current, &t.Price.Discount, &t.Price.Min, &t.Price.Max,
-// 		&t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated)
-//
-// 	if err != nil {
-// 		log.Printf("err: pg: view by id: stmt: %v\n", err)
-// 		return nil
-// 	}
-// 	return &t
-// }
-//
+// // TicketWithID ... попытка в агрегации =)
+// stmt := `
+// WITH some_count AS (
+// SELECT
+// id,
+// ARRAY_AGG (link_address) photo_links
+// FROM
+// tickets
+// LEFT JOIN photo_links ON tickets.id=photo_links.ticket_id
+// GROUP BY
+// id)
+// SELECT * FROM some_count
+// WHERE id=$1;
+// `

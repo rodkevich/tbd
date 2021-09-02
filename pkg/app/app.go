@@ -22,7 +22,7 @@ var (
 )
 
 func init() {
-	var config = "postgresql://postgres:postgres@localhost:5432/postgres"
+	var config = os.Getenv("DATASOURCE_URL")
 	ds, err = postgres.NewDatasource(config)
 	if err != nil {
 		panic(err)
@@ -75,7 +75,4 @@ func (a *Application) Run(port string) {
 	srv.Shutdown(ctx)
 	log.Println("Stopping API server on " + port)
 	os.Exit(0)
-}
-
-func (a *Application) SetUp(user, password, dbname string) {
 }

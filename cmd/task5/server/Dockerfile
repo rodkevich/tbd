@@ -6,24 +6,26 @@ ENV GO111MODULE=auto
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 
-RUN go get -d -v github.com/go-playground/validator
-RUN go get -d -v github.com/google/uuid
-RUN go get -d -v github.com/gorilla/mux
+#RUN go get -d -v github.com/go-playground/validator
+#RUN go get -d -v github.com/google/uuid
+#RUN go get -d -v github.com/gorilla/mux
 #RUN dpkg-reconfigure ca-certificates
 
 WORKDIR /go/src/github.com/rodkevich/tbd
 COPY . .
-WORKDIR /go/src/github.com/rodkevich/tbd/cmd/task5/app
+RUN go mod init
+RUN go get ./...
+WORKDIR /go/src/github.com/rodkevich/tbd/cmd/task5/server
 
-RUN go build -ldflags="-s -w" ./app.go
+RUN go build -ldflags="-s -w" ./server.go
 
 # server stage
 FROM scratch
 LABEL maintainer="ivan.rodkevich/app"
 
-COPY --from=builder /go/src/github.com/rodkevich/tbd/cmd/task5/app .
+COPY --from=builder /go/src/github.com/rodkevich/tbd/cmd/task5/server .
 #COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 EXPOSE 12300
 
-CMD ["./app"]
+CMD ["./server"]

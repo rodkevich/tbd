@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/rodkevich/tbd/pkg/tickets"
-	"github.com/rodkevich/tbd/pkg/tickets/types"
 )
 
 // StructureValidationSolution ...
@@ -13,11 +12,7 @@ func main() {
 	ticket.Price.Current = 100
 	ticket.Description = `Description`
 	ticket.Name = `Name`
-	ticket.PhotoLinks = []types.Link{
-		"http://www.example.com/a#",
-		"https://www.example.com/b?a=b%20c",
-		"ws://www.example.com/websocket",
-	}
+	ticket.PhotoMainLink = `https://www.example.com/b?a=b%20c`
 	ticket.PhoneNumber = `+91 (123) 456-7890`
 
 	validate := tickets.TicketValidation
@@ -31,6 +26,7 @@ func main() {
 		tickets.WithDescriptionCheck(),
 		tickets.WithPhotoLinksCheck(),
 	)
+	log.Println(ticket)
 	if err != nil {
 		log.Fatal(err)
 	}

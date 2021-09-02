@@ -1,4 +1,7 @@
 tbd
+
+#### Вообще эта задача для NoSQL базы...
+
 ***
 If you have any docker volumes attached to postgres init.js won't work. Detach them
 using :

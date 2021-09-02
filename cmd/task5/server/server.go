@@ -1,12 +1,12 @@
 package main
 
 import (
-	"log"
+	"os"
 
 	"github.com/rodkevich/tbd/pkg/app"
 )
 
 func main() {
-	log.Println("here we go")
-	app.Run()
+	a := app.Application{}
+	a.Run(os.Getenv("APP_API_PORT"))
 }
