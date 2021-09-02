@@ -1,6 +1,6 @@
 ### tbd
 
-`docker-compose переписан на работу imgae из rodkevich/tbd:0.1`  
+`docker-compose переписан на работу imgage из docker-hub rodkevich/tbd:0.1`  
 Билд в нём закомитан, при необходимости можно раскомитать.  
 Wait - скриптов не писал. Сначала лучше базу запустить т.к. init.sql. :)
 
