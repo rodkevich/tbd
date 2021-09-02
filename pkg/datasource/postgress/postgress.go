@@ -71,7 +71,7 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 			`
 		err = d.db.QueryRow(ctx, stmt2, ticketID, photoLink).Scan()
 		if err != nil {
-			log.Println(err)
+			return
 		}
 	}
 	return

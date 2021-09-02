@@ -22,9 +22,14 @@ var (
 )
 
 func init() {
+	err = os.Setenv("DATASOURCE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
+	if err != nil {
+		panic(err)
+	}
 	var config = os.Getenv("DATASOURCE_URL")
 	ds, err = postgres.NewDatasource(config)
 	if err != nil {
+		log.Println(err)
 		panic(err)
 	}
 }
