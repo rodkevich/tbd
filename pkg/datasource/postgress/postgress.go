@@ -33,7 +33,7 @@ func NewDatasource(config string) (ds.Datasource, error) {
 	if poolErr != nil {
 		log.Fatalf("Unable to connect database: %v\n", poolErr)
 	}
-	log.Printf("Connected!")
+	log.Printf("New PG datasource connected to: %v", config)
 
 	return &datasource{pool}, nil
 }
@@ -160,7 +160,7 @@ func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 		`
 		rows, err := d.db.Query(ctxDefault, getTicketLinks, t.ID)
 		if err != nil {
-			log.Println(err)
+			return nil
 		}
 		var link string
 		for rows.Next() {

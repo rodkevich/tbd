@@ -21,27 +21,23 @@ var (
 	err error
 )
 
-func init() {
-	err = os.Setenv("DATASOURCE_URL", "postgresql://postgres:postgres@localhost:5432/postgres")
-	if err != nil {
-		panic(err)
-	}
-	var config = os.Getenv("DATASOURCE_URL")
+// Application ...
+type Application struct {
+	Router                   *mux.Router
+	*tickets.Struckturizator // Embedding task3
+}
+
+// Run ...
+func (a *Application) Run(port string, config string) {
+
+	// Init datasource
 	ds, err = postgres.NewDatasource(config)
 	if err != nil {
 		log.Println(err)
 		panic(err)
 	}
-}
 
-// Application ...
-type Application struct {
-	Router                   *mux.Router
-	*tickets.Struckturizator // embedding task3
-}
-
-// Run ...
-func (a *Application) Run(port string) {
+	// Run sever instance in goroutine
 	var wait time.Duration
 	flag.DurationVar(
 		&wait,
@@ -64,7 +60,7 @@ func (a *Application) Run(port string) {
 		Handler:      router,
 	}
 	log.Println("Starting API server on " + port)
-	// start non-blocking
+	// Start non-blocking
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			log.Println(err)
@@ -72,9 +68,9 @@ func (a *Application) Run(port string) {
 	}()
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
-	// Block until we receive our signal.
+	// Block until we receive our signal
 	<-c
-	// Create a deadline to wait for.
+	// Create a deadline to wait for
 	ctx, cancel := context.WithTimeout(context.Background(), wait)
 	defer cancel()
 	srv.Shutdown(ctx)

@@ -19,20 +19,20 @@ services:
     networks:
       - tickets
 
-#  task5-app:
-#    build:
-#      context: ../..
-#      dockerfile: cmd/task5/server/Dockerfile
-#    image: task5-app
-#    container_name: task5-app
-#    hostname: task5-app
-#    env_file:
-#      - config/dev.app.env
-#    ports:
-#      - "12300:12300"
-#    networks:
-#      - tickets
-#    depends_on: [ "task5-postgres" ]
+  task5-app:
+    build:
+      context: ../..
+      dockerfile: cmd/task5/server/Dockerfile
+    image: task5-app
+    container_name: task5-app
+    hostname: task5-app
+    env_file:
+      - config/dev.app.env
+    ports:
+      - "12300:12300"
+    networks:
+      - tickets
+    depends_on: [ "task5-postgres" ]
 
 
 networks:

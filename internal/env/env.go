@@ -5,8 +5,8 @@ import (
 	"os"
 )
 
-// EnvGetOrDefault ...
-func EnvGetOrDefault(key string, alt string) string {
+// GetOrDefault for local usage or whatever =)
+func GetOrDefault(key string, alt string) string {
 	val, presented := os.LookupEnv(key)
 	log.Println(val)
 	if !presented {

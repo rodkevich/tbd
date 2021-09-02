@@ -1,21 +1,24 @@
 package main
 
 import (
-	"os"
-
+	"github.com/rodkevich/tbd/internal/env"
 	"github.com/rodkevich/tbd/pkg/app"
 )
 
-func init() {
-	err := os.Setenv("APP_API_PORT", "12300")
-	if err != nil {
-		panic(err)
-	}
-}
-
 func main() {
+
+	appPort := env.GetOrDefault(
+		// make it run locally & in docker
+		"APP_API_PORT",
+		"12300",
+	)
+	dataSourceURL := env.GetOrDefault(
+		// for docker db on localhost
+		"DATASOURCE_URL",
+		"postgresql://postgres:postgres@localhost:5432/postgres",
+	)
 	a := app.Application{}
-	a.Run(os.Getenv("APP_API_PORT"))
+	a.Run(appPort, dataSourceURL)
 }
 
 /*
@@ -44,7 +47,6 @@ curl -X POST 'localhost:12300/api/v0/create' \
     "created_at": "0021-01-01T00:00:00Z",
     "is_active": true
 }'
-
 
 NOTE: to get ticket paste new uuid & call :
 curl -X GET 'localhost:12300/api/v0/ticket/c0c31f94-d14d-4c5b-81ef-1058d5906f70?fields=true'
