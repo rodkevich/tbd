@@ -1,8 +1,9 @@
 ### tbd
 
-`docker-compose переписан на работу image из docker-hub rodkevich/tbd:0.1`  
+`docker-compose переписан на работу c image из docker-hub rodkevich/tbd:0.1`  
 Билд в нём закомитан, при необходимости можно раскомитать.  
-Wait - скриптов не писал. Сначала лучше базу запустить т.к. init.sql. :)
+Wait - скриптов не писал т.к. init.sql и контейнер scratch. Сначала лучше базу
+запустить :)
 
 Все, что нужно компилить, вынесено в ./cmd/{задача_номер}.  
 Сервер тоже, для удобства, но можно в /pkg переименовать Run в main и запускать как
@@ -31,6 +32,12 @@ NOTE: список всех чекаем:
 
 ***
 
+`WARNING`:  
+If you have any docker volumes attached to a postgres instance - init.sql won't work.  
+Before running a server detach them using :  
+`docker-compose down --volumes`  
+Or : create pg migrations from ./cmd/task5/config/migrations/init.sql manually
+
 Locally:   
 RUN: `go mod init` - if not exists  
 RUN: `go mod vendor`  
@@ -41,12 +48,6 @@ For tasks using db run on Docker navigate ./cmd/task5/:
 `docker-compose up`  
 Turn-off server container if you want to run server locally then:  
 RUN: `go run ./cmd/task5/server/server.go `
-
-`WARNING`:  
-If you have any docker volumes attached to a postgres instance - init.sql won't work.  
-Before running a server detach them using :  
-`docker-compose down --volumes`  
-Or : create pg migrations from ./cmd/task5/config/migrations/init.sql manually
 
 Structure:  
 `pkg`  
