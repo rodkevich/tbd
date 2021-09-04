@@ -136,10 +136,19 @@ func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 	ctx, cancel := context.WithTimeout(ctxDefault, operationsTimeOut)
 	defer cancel()
+
 	stmt := `
-		SELECT *
+		WITH some_count AS (
+		SELECT id, order_number, ticket_name, photo_main_link, currency, current_price,
+		discount, min_price, max_price, description, phone_number,
+		is_active, created_at,
+		ARRAY_AGG(link_address) photo_links
 		FROM tickets
-		WHERE id = $1;
+		 LEFT JOIN photo_links ON tickets.id = photo_links.ticket_id
+		GROUP BY id)
+		SELECT *
+		FROM some_count
+		WHERE some_count.id = $1;
 		`
 	var t tickets.Ticket
 	row := d.db.QueryRow(ctx, stmt, id)
@@ -147,46 +156,14 @@ func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 		&t.ID, &t.OrderNumber, &t.Name, &t.PhotoMainLink,
 		&t.Price.Currency, &t.Price.Current,
 		&t.Price.Discount, &t.Price.Min, &t.Price.Max,
-		&t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated,
+		&t.Description, &t.PhoneNumber, &t.Active, &t.DateCreated, &t.PhotoLinks,
 	); err != nil {
 		log.Println(err)
 		return nil
 	}
 	// optional part
-	if fields {
-		getTicketLinks := `
-		SELECT  link_address
-		FROM photo_links
-		WHERE ticket_id = $1;
-		`
-		rows, err := d.db.Query(ctxDefault, getTicketLinks, t.ID)
-		if err != nil {
-			return nil
-		}
-		var link string
-		for rows.Next() {
-			if err := rows.Scan(
-				&link,
-			); err != nil {
-				return nil
-			}
-			t.PhotoLinks = append(t.PhotoLinks, link)
-		}
+	if !fields {
+		t.PhotoLinks = nil
 	}
 	return &t
 }
-
-// // TicketWithID ... попытка в агрегации =)
-// stmt := `
-// WITH some_count AS (
-// SELECT
-// id,
-// ARRAY_AGG (link_address) photo_links
-// FROM
-// tickets
-// LEFT JOIN photo_links ON tickets.id=photo_links.ticket_id
-// GROUP BY
-// id)
-// SELECT * FROM some_count
-// WHERE id=$1;
-// `
