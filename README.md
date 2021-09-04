@@ -11,7 +11,7 @@ Wait - скриптов не писал. Сначала лучше базу за
 https://github.com/rodkevich/tbd/blob/develop/cmd/task5/server/server.go
 
 NOTE: Из рута проекта можно популять файлы post_example.json, насоздавать тикетов:  
-`curl -d "@post_example.json" -X POST localhost:12300/api/v0/create`  
+`curl -d "@post_example.json" -X POST localhost:12300/api/v0/create -v -H "Content-Type: application/json"`  
 На моём стейдже работает ^^
 
 NOTE: получаем в консоли айди. Их, соответственно, чекаем по урлам, меняя в шаблоне:
@@ -80,7 +80,8 @@ Structure:
 | |-req.yaml  
 |-**task5 - last task app**  
 | |-validations.go - **example of ticket validation, it also inbuilt to server**  
-| |-req.yaml | |-`server` - **application**  
+| |-req.yaml  
+| |-`server` - **application**  
 | |-`docker-compose.yml
 
 `internal` *different small helpers*  
