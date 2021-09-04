@@ -7,9 +7,13 @@ Wait - скриптов не писал т.к. init.sql и контейнер sc
 
 Все, что нужно компилить, вынесено в ./cmd/{задача_номер}.  
 Сервер тоже, для удобства, но можно в /pkg переименовать Run в main и запускать как
-надо)  
+надо)
+
 Файл запускающий сервер для демонстрации:  
 https://github.com/rodkevich/tbd/blob/develop/cmd/task5/server/server.go
+
+NOTE: пример валидации через option-functions в:  
+https://github.com/rodkevich/tbd/blob/develop/cmd/task5/validations.go
 
 NOTE: Из рута проекта можно популять файлы post_example.json, насоздавать тикетов:  
 `curl -d "@post_example.json" -X POST localhost:12300/api/v0/create -v -H "Content-Type: application/json"`  
