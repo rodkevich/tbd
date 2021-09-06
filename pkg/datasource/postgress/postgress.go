@@ -28,10 +28,11 @@ type datasource struct {
 
 // NewDatasource ...
 func NewDatasource(config string) (ds.Datasource, error) {
-	pool, poolErr := pgxpool.Connect(context.Background(), config)
+	pool, err := pgxpool.Connect(context.Background(), config)
 
-	if poolErr != nil {
-		log.Fatalf("Unable to connect database: %v\n", poolErr)
+	if err != nil {
+		log.Printf("Unable to connect database: %v\n", err)
+		return nil, err
 	}
 	log.Printf("New PG datasource connected to: %v", config)
 
@@ -63,21 +64,30 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 
 	if err != nil {
 		log.Println(err)
+		return
 	}
 
+	batch := &pgx.Batch{}
 	for _, photoLink := range t.PhotoLinks {
-		var c int
 		stmt2 := `
 			INSERT INTO photo_links (ticket_id, link_address)
 			VALUES ($1, $2)
 			RETURNING link_id;
 		`
-		err := d.db.QueryRow(ctx, stmt2, ticketID, photoLink).Scan(&c)
-		if err != nil {
-			log.Println(err)
-		}
+		batch.Queue(stmt2, ticketID, photoLink)
 	}
-	return
+
+	br := d.db.SendBatch(ctxDefault, batch)
+	ct, err := br.Exec()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if ct.RowsAffected() != 1 {
+		log.Printf("%v ticket links: rows affected => %v, want %v", ticketID, ct.RowsAffected(), 1)
+	}
+
+	return ticketID
 }
 
 // List ...

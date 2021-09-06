@@ -33,8 +33,20 @@ func (a *Application) Run(port string, config string) {
 	// Init datasource
 	ds, err = postgres.NewDatasource(config)
 	if err != nil {
-		log.Println(err)
-		panic(err)
+
+		time.Sleep(time.Second * 3)
+		log.Println("trying to reconnect to data-source in 3 sec")
+		ds, err = postgres.NewDatasource(config)
+
+		if err != nil {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Println("err: data-source isn't ready")
+				}
+			}()
+			log.Println(err)
+			panic(err)
+		}
 	}
 
 	// Run sever instance in goroutine
