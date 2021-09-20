@@ -48,6 +48,12 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 	ctx, cancel := context.WithTimeout(ctxDefault, operationsTimeOut)
 	defer cancel()
 
+	tx, err := d.db.Begin(ctx)
+	if err != nil {
+		return
+	}
+	defer tx.Rollback(ctx)
+
 	stmt = `
 		INSERT INTO tickets
 		(order_number, ticket_name, photo_main_link, currency, current_price,
@@ -56,7 +62,7 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING id;
 		`
-	err := d.db.QueryRow(
+	err = tx.QueryRow(
 		ctx, stmt,
 		t.OrderNumber, t.Name, t.PhotoMainLink, t.Price.Currency,
 		t.Price.Current, t.Price.Discount, t.Price.Min, t.Price.Max,
@@ -77,32 +83,45 @@ func (d datasource) Create(t tickets.Ticket) (ticketID string) {
 		batch.Queue(stmt2, ticketID, photoLink)
 	}
 
-	br := d.db.SendBatch(ctxDefault, batch)
-	ct, err := br.Exec()
+	br := tx.SendBatch(ctx, batch)
+	var tempLinkID uint
+	for range t.PhotoLinks {
+		err = br.QueryRow().Scan(&tempLinkID)
+		log.Printf("Created link id: %v", tempLinkID)
+		if err != nil {
+			ticketID += " :error: failed to create"
+			log.Println(ticketID, err)
+			return
+		}
+	}
+
+	err = br.Close()
 	if err != nil {
+		log.Println(err)
+		ticketID += " :error: failed to create"
+		return
+	}
+
+	err = tx.Commit(ctx)
+	if err != nil {
+		ticketID += " :error: failed to create"
 		log.Println(err)
 		return
 	}
-	if ct.RowsAffected() != 1 {
-		log.Printf("%v ticket links: rows affected => %v, want %v", ticketID, ct.RowsAffected(), 1)
-	}
 
-	return ticketID
+	return
 }
 
 // List ...
 func (d datasource) List(PriceSort, DateSort string) (items []tickets.Ticket) {
 	stmt := `
-		WITH some_count AS (
 		SELECT id, order_number, ticket_name, photo_main_link, currency, current_price,
 		discount, min_price, max_price, description, phone_number,
 		is_active, created_at,
 		ARRAY_AGG(link_address) photo_links
 		FROM tickets
 		LEFT JOIN photo_links ON tickets.id = photo_links.ticket_id
-		GROUP BY id)
-		SELECT *
-		FROM some_count
+		GROUP BY id
 		ORDER BY
 		created_at ` + DateSort + `,
 		current_price ` + PriceSort + `;
@@ -138,18 +157,16 @@ func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 	defer cancel()
 
 	stmt := `
-		WITH some_count AS (
 		SELECT id, order_number, ticket_name, photo_main_link, currency, current_price,
 		discount, min_price, max_price, description, phone_number,
 		is_active, created_at,
 		ARRAY_AGG(link_address) photo_links
 		FROM tickets
 		LEFT JOIN photo_links ON tickets.id = photo_links.ticket_id
-		GROUP BY id)
-		SELECT *
-		FROM some_count
-		WHERE some_count.id = $1;
+		WHERE id = $1
+		GROUP BY id;
 		`
+
 	var t tickets.Ticket
 	row := d.db.QueryRow(ctx, stmt, id)
 	if err := row.Scan(
@@ -165,5 +182,6 @@ func (d datasource) TicketWithID(id uuid.UUID, fields bool) *tickets.Ticket {
 	if !fields {
 		t.PhotoLinks = nil
 	}
+
 	return &t
 }
