@@ -14,7 +14,7 @@ type Ticket struct {
 	OrderNumber   uint       `json:"order_number" validate:"gte=1,lte=10"`
 	Name          string     `json:"ticket_name" validate:"gte=0,lte=200"`
 	PhotoMainLink types.Link `json:"photo_main_link"`
-	PhotoLinks    []string   `json:"photo_links,omitempty" validate:"lte=3"`
+	PhotoLinks    []*string  `json:"photo_links,omitempty" validate:"lte=3"`
 	Price         struct {
 		Currency types.Currency `json:"currency"`
 		Current  float64        `json:"current_price" validate:"gte=0,lte=9223372036854775807"`
