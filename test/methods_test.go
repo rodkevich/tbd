@@ -16,7 +16,7 @@ func TestTicket_String(t1 *testing.T) {
 		OrderNumber   uint
 		Name          string
 		PhotoMainLink types.Link
-		PhotoLinks    []string
+		PhotoLinks    []*string
 		Price         struct {
 			Currency types.Currency `json:"currency"`
 			Current  float64        `json:"current_price" validate:"gte=0,lte=9223372036854775807"`
@@ -29,7 +29,10 @@ func TestTicket_String(t1 *testing.T) {
 		DateCreated time.Time
 		Active      bool
 	}
-	tests := []struct {
+
+	s, s2, s3 := "http://www.example.com/a#", "https://www.example.com/b?a=b%20c", "ws://www.example.com/websocket"
+
+	var tests = []struct {
 		name   string
 		fields fields
 		wantS  string
@@ -54,10 +57,10 @@ func TestTicket_String(t1 *testing.T) {
 				OrderNumber:   1,
 				Name:          "Name Example",
 				PhotoMainLink: "http://www.example.com",
-				PhotoLinks: []string{
-					"http://www.example.com/a#",
-					"https://www.example.com/b?a=b%20c",
-					"ws://www.example.com/websocket",
+				PhotoLinks: []*string{
+					&s,
+					&s2,
+					&s3,
 				},
 				Description: "Description Here",
 				PhoneNumber: "+91 (123) 456-7890",
